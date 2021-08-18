@@ -62,20 +62,20 @@
        :body
        (mapv (fn [[time open high low close]] {:time time :open open :high high :low low :close close}))))
 
-(def candles (get-historical-rates
-              "BTC-USD"
-              (.minusHours (->utc-now) 1)
-              (->utc-now)
-              60))
+(defn get-time
+  "Retrieves coinbase server time"
+  []
+  (-> (client/get (format "%s/time" api-base) {:as :json})
+      (get-in [:body :iso])
+      (java.time.Instant/parse)))
 
 (comment
   (do
     (get-products)
     (get-currencies)
+    (get-time)
     (get-product "BTC-USD")
     (get-product-order-book "BTC-USD")
     (get-product-ticker "BTC-USD")
     (get-product-trades "BTC-USD")
-    (get-product-24hr-stats "BTC-USD")
-    (doseq [candle candles]
-      (println candle))))
+    (get-product-24hr-stats "BTC-USD")))
